@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import './style.css';
 
 function Square(props) {
+    let style = props.selected ? "square square-selected" : "square";
     return (
-        <button className="square" onClick={props.onClick}>
+        <button className={style} onClick={props.onClick}>
             {props.value}
         </button>
     );
@@ -30,9 +31,10 @@ class Board extends React.Component {
     // }
 
     renderSquare(i) {
+        const selected = i == this.props.selectedIndex ? true : false;
         return (
             <Square
-                value={this.props.squares[i]} onClick={() => this.props.onClick(i)}
+                value={this.props.squares[i]} selected={selected} onClick={() => this.props.onClick(i)}
             />
         )
     }
@@ -117,7 +119,7 @@ class Game extends React.Component {
 
     render() {
         const history = this.state.history;
-        const current = history[this.state.stepNumber];
+        const current = this.state.stepNumber == this.state.jumpToStep ? history[this.state.stepNumber] : history[this.state.jumpToStep];
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
@@ -139,10 +141,11 @@ class Game extends React.Component {
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
+        let selected = (current.location.row - 1) * 3 + (current.location.col -1);
         return (
             <div className="game">
                 <div className="game-board">
-                    <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
+                    <Board squares={current.squares} selectedIndex={selected} onClick={(i) => this.handleClick(i)} />
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
