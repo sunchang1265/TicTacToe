@@ -79,11 +79,15 @@ class Game extends React.Component {
                 location: {col: null, row: null}
             }],
             xIsNext: true,
-            stepNumber: 0
+            stepNumber: 0,
+            jumpToStep: 0 //After jump to should not allow any move before go back to current step
         };
     }
 
-    handleClick(i) {
+    handleClick(i) {        
+        if(this.state.jumpToStep != this.state.stepNumber){
+            return; //After jump to should not allow any move before go back to current step
+        }
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
@@ -99,14 +103,15 @@ class Game extends React.Component {
                 location: {row: xLocation, col: yLocation}
             }]),
             xIsNext: !this.state.xIsNext,
-            stepNumber: this.state.history.length,            
+            stepNumber: this.state.history.length,  
+            jumpToStep: this.state.history.length          
         });
     }
 
-    jumpTo(step) {
+    jumpTo(move) {
         this.setState({
-            stepNumber: step,
-            xIsNext: (step % 2) === 0,
+            jumpToStep: move,
+            xIsNext: (move % 2) === 0,            
         });
     }
 
@@ -116,7 +121,7 @@ class Game extends React.Component {
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
-            //console.log(step);
+
             const desc = move ?
                 'Go to move #' + move :
                 'Go to game start';
