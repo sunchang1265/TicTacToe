@@ -98,7 +98,8 @@ class Game extends React.Component {
             }],
             xIsNext: true,
             stepNumber: 0,
-            jumpToStep: 0 //After jump to should not allow any move before go back to current step
+            jumpToStep: 0, //After jump to should not allow any move before go back to current step
+            order_asec: true
         };
     }
 
@@ -122,7 +123,8 @@ class Game extends React.Component {
             }]),
             xIsNext: !this.state.xIsNext,
             stepNumber: this.state.history.length,  
-            jumpToStep: this.state.history.length          
+            jumpToStep: this.state.history.length,
+            order_asec: this.state.order_asec          
         });
     }
 
@@ -133,12 +135,18 @@ class Game extends React.Component {
         });
     }
 
+    reverseOrder(){
+        this.setState({
+            order_asec: !this.state.order_asec
+        });
+    }
+
     render() {
         const history = this.state.history;
         const current = this.state.stepNumber == this.state.jumpToStep ? history[this.state.stepNumber] : history[this.state.jumpToStep];
         const winner = calculateWinner(current.squares);
 
-        const moves = history.map((step, move) => {
+        let moves = history.map((step, move) => {
 
             const desc = move ?
                 'Go to move #' + move :
@@ -150,6 +158,9 @@ class Game extends React.Component {
                 </li>
             );
         });
+        if(this.state.order_asec == false){
+            moves.reverse();
+        }
 
         let status;
         if (winner) {
@@ -166,6 +177,7 @@ class Game extends React.Component {
                 <div className="game-info">
                     <div>{status}</div>
                     <ol>{moves}</ol>
+                    <div><input type="checkbox" onClick={() => this.reverseOrder()}/>reverse</div>
                 </div>
             </div>
         );
