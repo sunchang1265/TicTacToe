@@ -149,6 +149,20 @@ class Game extends React.Component {
         });
     }
 
+    restart() {
+        this.setState({
+            history: [{
+                squares: Array(9).fill(null),
+                location: {col: null, row: null},
+                highlight_line: []
+            }],
+            xIsNext: true,
+            stepNumber: 0,
+            jumpToStep: 0, //After jump to should not allow any move before go back to current step
+            order_asec: true
+        })
+    }
+
     render() {
         const history = this.state.history;
         const current = this.state.stepNumber == this.state.jumpToStep ? history[this.state.stepNumber] : history[this.state.jumpToStep];
@@ -171,12 +185,15 @@ class Game extends React.Component {
         }
 
         let status;
+        let end = false;
         if (winner_line) {
             status = 'Winner: ' + current.squares[winner_line[0]];
+            end = true;
         } else if(moves.length <= current.squares.length){
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         } else {
-            status = 'DRAW!!!';            
+            status = 'DRAW!!!';
+            end = true;            
         }
         let selected = (current.location.row - 1) * 3 + (current.location.col -1);
         return (
@@ -193,6 +210,7 @@ class Game extends React.Component {
                     <div>{status}</div>
                     <ol>{moves}</ol>
                     <div><input type="checkbox" onClick={() => this.reverseOrder()}/>reverse</div>
+                    {end ? <button onClick={()=>this.restart()}>restart</button> : null}
                 </div>
             </div>
         );
